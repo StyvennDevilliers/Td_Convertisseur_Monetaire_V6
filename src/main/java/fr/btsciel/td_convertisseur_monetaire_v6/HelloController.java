@@ -31,7 +31,7 @@ public class HelloController implements Initializable {
     private final double taux_Euro_Dollar = 1.1796;
     private final double taux_Euro_Yen = 185.01;
     private final double taux_Euro_Livre = 0.86;
-    private final DecimalFormat df = new DecimalFormat("#.##");
+    private final DecimalFormat df = new DecimalFormat("#.####");
     private static ArrayList<ConversionDevise> conversionDevises = new ArrayList<>();
     @FXML
     private ComboBox comboSelection;
@@ -68,6 +68,7 @@ public class HelloController implements Initializable {
     }
 
     public void convertion(){
+        ConversionDevise conversionDevise = conversionDevises.get(comboSelection.getSelectionModel().getSelectedIndex());
         buttonConvertion.setOnAction(e -> {
             valeur_Init = Double.parseDouble(textField_init.getText());
             if(conversionDevise.getSource().equals("Euro")){
@@ -83,6 +84,7 @@ public class HelloController implements Initializable {
 
     private void initConvertion(ConversionDevise conversionDevise){
         label_Init.setText(conversionDevise.getSource());
+        label_Final.setText(conversionDevise.getCible());
     }
 
     private void comboSelection(Event e){
