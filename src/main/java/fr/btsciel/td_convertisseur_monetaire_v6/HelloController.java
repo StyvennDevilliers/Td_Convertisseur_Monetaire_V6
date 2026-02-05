@@ -45,17 +45,19 @@ public class HelloController implements Initializable {
         fabriqueDonnees();
         conversionDevises.forEach(info -> comboSelection.getItems().add(info.getPrompt()));
         comboSelection.setOnAction(e -> {
+            textField_init.setDisable(false);
+            buttonConvertion.setDisable(false);
             comboSelection(e);
         });
     }
 
     private void fabriqueDonnees() {
         conversionDevises.add(new ConversionDevise("Euro - Dollar Us",taux_Euro_Dollar,"Euro","Dollar"));
-        conversionDevises.add(new ConversionDevise("Dollar Us - Euro",taux_Euro_Dollar,"Dollar","Euro"));
+        conversionDevises.add(new ConversionDevise("Dollar Us - Euro",1/taux_Euro_Dollar,"Dollar","Euro"));
         conversionDevises.add(new ConversionDevise("Euro - Livre",taux_Euro_Livre,"Euro","Livre"));
-        conversionDevises.add(new ConversionDevise("Livre - Euro",taux_Euro_Livre,"Livre","Euro"));
+        conversionDevises.add(new ConversionDevise("Livre - Euro",1/taux_Euro_Livre,"Livre","Euro"));
         conversionDevises.add(new ConversionDevise("Euro - Yen",taux_Euro_Yen,"Euro","Yen"));
-        conversionDevises.add(new ConversionDevise("Yen - Euro",taux_Euro_Yen,"Yen","Euro"));
+        conversionDevises.add(new ConversionDevise("Yen - Euro",1/taux_Euro_Yen,"Yen","Euro"));
     }
 
 
@@ -68,34 +70,28 @@ public class HelloController implements Initializable {
     }
 
     public void convertion(){
-        ConversionDevise conversionDevise = conversionDevises.get(comboSelection.getSelectionModel().getSelectedIndex());
-        buttonConvertion.setOnAction(e -> {
-            valeur_Init = Double.parseDouble(textField_init.getText());
-            if(conversionDevise.getSource().equals("Euro")){
-                valeur_Conversion = valeur_Init * conversionDevise.getTaux();
-            }else{
-                valeur_Conversion = valeur_Init / conversionDevise.getTaux();
-            }
-            valeur_Final = valeur_Conversion;
-            textField_Final.setText(String.valueOf(df.format(valeur_Final)).replaceAll(",", "."));
-        });
-
+        try {
+            buttonConvertion.setOnAction(e -> {
+                valeur_Init = Double.parseDouble(textField_init.getText());
+                valeur_Final = valeur_Init * valeur_Conversion;
+                textField_Final.setText(df.format(valeur_Final));
+            });
+        }catch (NumberFormatException ex){
+            alerteFormat();
+        }
     }
 
     private void initConvertion(ConversionDevise conversionDevise){
         label_Init.setText(conversionDevise.getSource());
         label_Final.setText(conversionDevise.getCible());
+        textField_Final.setText("");
+        valeur_Conversion = conversionDevise.getTaux();
     }
 
     private void comboSelection(Event e){
-        try {
-            textField_init.setDisable(false);
-            buttonConvertion.setDisable(false);
-            initConvertion(conversionDevises.get(comboSelection.getSelectionModel().getSelectedIndex()));
-            convertion();
-        }catch(NumberFormatException ex){
-            alerteFormat();
-        };
+        int index = comboSelection.getSelectionModel().getSelectedIndex();
+        initConvertion(conversionDevises.get(index));
+        convertion();
     }
 
 }
